@@ -220,7 +220,8 @@
       return;
     }
 
-    const root = document.querySelector(`.sidebar-v2-location.${loc}`);
+    const root = document.querySelector(`.sidebar-v2-location[class*="${loc}"]`);
+
     if (!root) {
       if (navRetryCount < MAX_NAV_RETRIES) {
         navRetryCount++;
