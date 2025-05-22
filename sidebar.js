@@ -75,7 +75,7 @@
     if (!$task.length) {
       $task = jQuery(`
         <a href="${tasksHref}" meta="task-management"
-           class="w-full group px-3 flex items-center justify-start text-sm font-medium rounded-md cursor-pointer opacity-70 hover:opacity-100 py-2">
+           class="sidebarhack-nav w-full group px-3 flex items-center justify-start text-sm font-medium rounded-md cursor-pointer opacity-70 hover:opacity-100 py-2">
           <span class="left-nav-icon"><i class="fas fa-tasks"></i></span>
           <span class="nav-title">Task Management</span>
         </a>
@@ -95,6 +95,7 @@
       payments:      $nav.find('a[meta="payments"]'),
       marketing:     $nav.find('a[meta="email-marketing"]'),
       automation:    $nav.find('a[meta="automation"]'),
+      sites:    $nav.find('a[meta="sites"]'),
       memberships:   $nav.find('a[meta="memberships"]')
     };
 
@@ -119,8 +120,9 @@
     showOrder(items.opportunities, 6);
     showOrder(items.payments,      7);
     showOrder(items.marketing,     8);
-    showOrder(items.automation,    9);
-    showOrder(items.memberships,   10);
+    showOrder(items.sites,     9);
+    showOrder(items.automation,    10);
+    showOrder(items.memberships,   11);
 
 
     // attach submenus
@@ -153,9 +155,26 @@
       { text: "Certificates",    href: `/v2/location/${locId}/memberships/certificates/create-certificates` },
       { text: "Group Marketplace", href: `/v2/location/${locId}/memberships/gokollab/activation` }
     ];
+    const sitesChildren = [
+      { text: "Funnels", href: `/v2/location/${locId}/funnels-websites/funnels` },
+      { text: "Websites", href: `/v2/location/${locId}/funnels-websites/websites` },
+      { text: "Stores", href: `/v2/location/${locId}/funnels-websites/stores` },
+      { text: "Webinars", href: `/v2/location/${locId}/funnels-websites/webinars` },
+      { text: "Analytics", href: `/v2/location/${locId}/analytics` },
+      { text: "Blogs", href: `/v2/location/${locId}/blogs` },
+      { text: "WordPress", href: `/v2/location/${locId}/wordpress` },
+      { text: "Client Portal", href: `/v2/location/${locId}/funnels-websites/client-portal/dashboard` },
+      { text: "Forms", href: `/v2/location/${locId}/form-builder/main` },
+      { text: "Surveys", href: `/v2/location/${locId}/survey-builder/main` },
+      { text: "Quizzes", href: `/v2/location/${locId}/quiz-builder/main` },
+      { text: "Chat Widget", href: `/v2/location/${locId}/funnels-websites/chat-widget` },
+      { text: "QR Codes", href: `/v2/location/${locId}/qr-codes` },
+      { text: "Domain Settings", href: `/v2/location/${locId}/settings/domain` },
+    ];
+
     attachSubmenu(items.marketing,   marketingChildren);
     attachSubmenu(items.memberships, membershipChildren);
-
+    attachSubmenu(items.sites,       sitesChildren);
 
     log("✅ Sidebar customization complete");
   }
@@ -382,7 +401,7 @@
         resetSidebarOnUrlChange();
       });
 
-      jQuery(document).on("click", "#sidebar-v2 .slideout-menu a", function (e) {
+      jQuery(document).on("click", "#sidebar-v2 .slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
         const href = jQuery(this).attr("href");
         if (!href || href.startsWith("http")) return; // allow external links
 
