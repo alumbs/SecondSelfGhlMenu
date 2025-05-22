@@ -70,7 +70,7 @@
 
 
     // Task Management link
-    const tasksHref = `${BASE}/v2/location/${locId}/tasks`;
+    const tasksHref = `/v2/location/${locId}/tasks`;
     let $task = $nav.find('a[meta="task-management"]');
     if (!$task.length) {
       $task = jQuery(`
@@ -83,7 +83,6 @@
     } else {
       $task.attr('href', tasksHref);
     }
-
 
     // gather items
     const items = {
