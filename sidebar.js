@@ -105,7 +105,8 @@
 
 
     // hide all then reorder & show
-    $nav.children("a").css("display", "none");
+    $nav.children("a").not('[href^="javascript:"]').css("display", "none");
+
     function showOrder($el, pos) {
       if (!$el.length) return;
       $el.css({ display: "flex", order: pos });
