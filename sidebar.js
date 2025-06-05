@@ -304,7 +304,6 @@
       sidebarInitialized = false;
     }
 
-    cleanupSidebar();
     checkAndInject();
 
     // re-apply class if necessary, only if location is allowed (checkAndInject handles it)
