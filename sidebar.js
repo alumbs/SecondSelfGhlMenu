@@ -39,15 +39,50 @@
     return cls || null;
   }
 
+  // function attachSubmenu($parent, children) {
+  //   if (!$parent.length) return;
+  //   $parent.find('.slideout-menu').remove();
+  //   $parent.attr("data-has-submenu", "true");
+  //   const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+  //   children.forEach(c => {
+  //     jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
+  //   });
+  // }
+
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
+
     $parent.find('.slideout-menu').remove();
     $parent.attr("data-has-submenu", "true");
+
     const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+
     children.forEach(c => {
-      jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
+      const $link = jQuery("<a>")
+        .attr("href", c.href)
+        .addClass(`w-full group px-3 flex items-center justify-start lg:justify-start xl:justify-start
+                  text-sm font-medium rounded-md cursor-pointer font-medium opacity-70 hover:opacity-100 py-2 md:py-2 sidebarhack-submenu`)
+        .attr("id", `sb_${c.id || c.text.toLowerCase().replace(/\s+/g, '_')}`)
+        .attr("meta", c.id || c.text.toLowerCase());
+
+      // Optional icon span (empty or static icon, can be dynamic if needed)
+      const $iconSpan = jQuery("<span>")
+        .addClass(`left-nav-icon sb_${c.id || c.text.toLowerCase()}`)
+        .css("display", "none"); // mimic empty icons
+
+      // Nav title span
+      const $textSpan = jQuery("<span>")
+        .addClass("hl_text-overflow sm:hidden md:hidden nav-title lg:block xl:block")
+        .text(c.text);
+
+      // Append spans to link
+      $link.append($iconSpan).append($textSpan);
+
+      // Append to menu
+      $menu.append($link);
     });
   }
+
 
   function runSidebarHack($root, $nav, locId) {
     if (sidebarInitialized) {
