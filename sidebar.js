@@ -4,6 +4,7 @@
   // ──────────────────────────────────────────────────────
   const BASE      = window.location.origin;
   const NAV_SEL   = "#sidebar-v2 .hl_nav-header nav[aria-label='header']";
+  const LOCATION_ID_PLACEHOLDER = "__LOCATION_ID__";
 
   let allowedLocationIds = [];
   let sidebarInitialized = false;
@@ -88,6 +89,7 @@
     sidebarInitialized = true;
     log('🎯 Customizing sidebar for location:', locId);
 
+    // Use __LOCATION_ID__ as a placeholder in all submenu hrefs
     const items = {
       marketing:     $nav.find('a[meta="email-marketing"]'),
       memberships:   $nav.find('a[meta="memberships"]'),
@@ -99,87 +101,81 @@
     };
 
     const marketingChildren = [
-      { text: "Social Planner", href: `/v2/location/${locId}/marketing/social-planner/` },
-      { text: "Emails",         href: `/v2/location/${locId}/marketing/emails/statistics` },
-      { text: "Affiliate Manager", href: `/v2/location/${locId}/marketing/affiliate-manager/dashboard` },
-      { text: "Brand Boards",   href: `/v2/location/${locId}/marketing/brand-boards` },
-      { text: "Ad Manager",     href: `/v2/location/${locId}/marketing/ad-manager/home` },
-      { text: "Content AI",     href: `/v2/location/${locId}/marketing/content-ai` }
+      { text: "Social Planner", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/social-planner/` },
+      { text: "Emails",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/emails/statistics` },
+      { text: "Affiliate Manager", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/affiliate-manager/dashboard` },
+      { text: "Brand Boards",   href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/brand-boards` },
+      { text: "Ad Manager",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/ad-manager/home` },
+      { text: "Content AI",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/content-ai` }
     ];
     const membershipChildren = [
-      { text: "Dashboard",       href: `/v2/location/${locId}/memberships/client-portal/dashboard` },
-      { text: "Courses",         href: `/v2/location/${locId}/memberships/courses/dashboard` },
-      { text: "Groups",          href: `/v2/location/${locId}/memberships/communities/community-groups` },
-      { text: "Certificates",    href: `/v2/location/${locId}/memberships/certificates/create-certificates` },
-      { text: "Group Marketplace", href: `/v2/location/${locId}/memberships/gokollab/activation` }
+      { text: "Dashboard",       href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
+      { text: "Courses",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
+      { text: "Groups",          href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
+      { text: "Certificates",    href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` },
+      { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
     ];
     const sitesChildren = [
-      { text: "Funnels", href: `/v2/location/${locId}/funnels-websites/funnels` },
-      { text: "Websites", href: `/v2/location/${locId}/funnels-websites/websites` },
-      { text: "Stores", href: `/v2/location/${locId}/funnels-websites/stores` },
-      { text: "Webinars", href: `/v2/location/${locId}/funnels-websites/webinars` },
-      { text: "Analytics", href: `/v2/location/${locId}/analytics` },
-      { text: "Blogs", href: `/v2/location/${locId}/blogs` },
-      { text: "WordPress", href: `/v2/location/${locId}/wordpress` },
-      { text: "Client Portal", href: `/v2/location/${locId}/funnels-websites/client-portal/dashboard` },
-      { text: "Forms", href: `/v2/location/${locId}/form-builder/main` },
-      { text: "Surveys", href: `/v2/location/${locId}/survey-builder/main` },
-      { text: "Quizzes", href: `/v2/location/${locId}/quiz-builder/main` },
-      { text: "Chat Widget", href: `/v2/location/${locId}/funnels-websites/chat-widget` },
-      { text: "QR Codes", href: `/v2/location/${locId}/qr-codes` },
-      { text: "Domain Settings", href: `/v2/location/${locId}/settings/domain` },
+      { text: "Funnels", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/funnels` },
+      { text: "Websites", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/websites` },
+      { text: "Stores", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/stores` },
+      { text: "Webinars", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/webinars` },
+      { text: "Analytics", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/analytics` },
+      { text: "Blogs", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/blogs` },
+      { text: "WordPress", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/wordpress` },
+      { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/client-portal/dashboard` },
+      { text: "Forms", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/form-builder/main` },
+      { text: "Surveys", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/survey-builder/main` },
+      { text: "Quizzes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/quiz-builder/main` },
+      { text: "Chat Widget", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/chat-widget` },
+      { text: "QR Codes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/qr-codes` },
+      { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
     ];
-
     const membershipsChildren = [
-      { text: "Client Portal", href: `/v2/location/${locId}/memberships/client-portal/dashboard` },
-      { text: "Courses", href: `/v2/location/${locId}/memberships/courses/dashboard` },
-      { text: "Communities", href: `/v2/location/${locId}/memberships/communities/community-groups` },
-      { text: "Certificates", href: `/v2/location/${locId}/memberships/certificates/create-certificates` }
+      { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
+      { text: "Courses", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
+      { text: "Communities", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
+      { text: "Certificates", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` }
     ];
-
     const reportingChildren = [
-      { text: "Custom Reports", href: `/v2/location/${locId}/reporting/reports` },
-      { text: "Google Ads Report", href: `/v2/location/${locId}/reporting/google-ads` },
-      { text: "Facebook Ads Report", href: `/v2/location/${locId}/reporting/facebook-ads` },
-      { text: "Attribution Report", href: `/v2/location/${locId}/reporting/attribution` },
-      { text: "Call Report", href: `/v2/location/${locId}/reporting/call` },
-      { text: "Appointment Report", href: `/v2/location/${locId}/reporting/appointment` },
-      { text: "Audit Report", href: `/v2/location/${locId}/reporting/audit-report` }
+      { text: "Custom Reports", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/reports` },
+      { text: "Google Ads Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/google-ads` },
+      { text: "Facebook Ads Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/facebook-ads` },
+      { text: "Attribution Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/attribution` },
+      { text: "Call Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/call` },
+      { text: "Appointment Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/appointment` },
+      { text: "Audit Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/audit-report` }
     ];
-
     const reputationChildren = [
-      { text: "Overview", href: `/v2/location/${locId}/reputation/overview` },
-      { text: "Requests", href: `/v2/location/${locId}/reputation/requests` },
-      { text: "Reviews", href: `/v2/location/${locId}/reputation/reviews` },
-      { text: "Widgets", href: `/v2/location/${locId}/reputation/widget` },
-      { text: "Settings", href: `/v2/location/${locId}/reputation/settings` }
+      { text: "Overview", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/overview` },
+      { text: "Requests", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/requests` },
+      { text: "Reviews", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/reviews` },
+      { text: "Widgets", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/widget` },
+      { text: "Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/settings` }
     ];
-
     const paymentsChildren = [
-      { text: "Invoices & Estimates", href: `/v2/location/${locId}/payments/invoices` },
-      { text: "Documents & Contracts", href: `/v2/location/${locId}/payments/proposals-estimates` },
-      { text: "Orders", href: `/v2/location/${locId}/payments/v2/orders` },
-      { text: "Subscriptions", href: `/v2/location/${locId}/payments/v2/subscriptions` },
-      { text: "Payment Links", href: `/v2/location/${locId}/payments/v2/paymentlinks` },
-      { text: "Transactions", href: `/v2/location/${locId}/payments/v2/transactions` },
-      { text: "Products", href: `/v2/location/${locId}/payments/products` },
-      { text: "Coupons", href: `/v2/location/${locId}/payments/coupons` },
-      { text: "Settings", href: `/v2/location/${locId}/payments/settings/receipts` },
-      { text: "Integrations", href: `/v2/location/${locId}/payments/integrations` }
+      { text: "Invoices & Estimates", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/invoices` },
+      { text: "Documents & Contracts", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/proposals-estimates` },
+      { text: "Orders", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/orders` },
+      { text: "Subscriptions", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/subscriptions` },
+      { text: "Payment Links", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/paymentlinks` },
+      { text: "Transactions", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/transactions` },
+      { text: "Products", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/products` },
+      { text: "Coupons", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/coupons` },
+      { text: "Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/settings/receipts` },
+      { text: "Integrations", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/integrations` }
     ];
-
     const aiAgentsChildren = [
-      { text: "Getting Started", href: `/v2/location/${locId}/ai-agents/getting-started` },
-      { text: "Voice AI", href: `/v2/location/${locId}/ai-agents/voice-ai` },
-      { text: "Conversation AI", href: `/v2/location/${locId}/ai-agents/conversation-ai` },
-      { text: "Knowledge Base", href: `/v2/location/${locId}/ai-agents/knowledge-base` },
-      { text: "Content AI", href: `/v2/location/${locId}/ai-agents/content-ai` }
+      { text: "Getting Started", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/getting-started` },
+      { text: "Voice AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/voice-ai` },
+      { text: "Conversation AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/conversation-ai` },
+      { text: "Knowledge Base", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/knowledge-base` },
+      { text: "Content AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/content-ai` }
     ];
 
     attachSubmenu(items.marketing,   marketingChildren);
     attachSubmenu(items.memberships, membershipChildren);
     attachSubmenu(items.sites,       sitesChildren);
-
     attachSubmenu(items.memberships, membershipsChildren);
     attachSubmenu(items.reporting, reportingChildren);
     attachSubmenu(items.reputation, reputationChildren);
@@ -333,11 +329,14 @@
       });
 
       jQuery(document).on("click", "#sidebar-v2 .slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
-        const href = jQuery(this).attr("href");
+        let href = jQuery(this).attr("href");
         const currentPath = window.location.pathname;
-
         if (!href || href.startsWith("http")) return; // allow external links
-
+        // Use extractLocationIdFromDom to get the latest locationId
+        const currentLocId = extractLocationIdFromDom();
+        if (currentLocId) {
+          href = href.replace(LOCATION_ID_PLACEHOLDER, currentLocId);
+        }
         // Normalize both paths to avoid trailing slash issues
         const normalizedHref = href.replace(/\/+$/, '');
         const normalizedCurrent = currentPath.replace(/\/+$/, '');
