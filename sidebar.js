@@ -55,33 +55,36 @@
     $parent.find('.slideout-menu').remove();
     $parent.attr("data-has-submenu", "true");
 
-    const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+    // Create submenu container with Tailwind layout
+    const $menu = jQuery("<div>")
+      .addClass(`slideout-menu absolute top-0 left-full z-[9999] bg-white rounded-md shadow-lg 
+                min-w-[12rem] py-2 hidden group-hover:block`) // use group-hover for hover effect
+      .appendTo($parent);
 
     children.forEach(c => {
       const $link = jQuery("<a>")
         .attr("href", c.href)
-        .addClass(`w-full group px-3 flex items-center justify-start lg:justify-start xl:justify-start
-                  text-sm font-medium rounded-md cursor-pointer font-medium opacity-70 hover:opacity-100 py-2 md:py-2 sidebarhack-submenu`)
-        .attr("id", `sb_${c.id || c.text.toLowerCase().replace(/\s+/g, '_')}`)
-        .attr("meta", c.id || c.text.toLowerCase());
+        .addClass(`flex items-center w-full text-sm font-medium text-gray-700 
+                  px-4 py-2 rounded-md hover:bg-gray-100 hover:text-[#5485d9] transition`)
+        .attr("meta", c.meta || c.text.toLowerCase())
+        .attr("id", `sb_${c.text.toLowerCase().replace(/\s+/g, '_')}`);
 
-      // Optional icon span (empty or static icon, can be dynamic if needed)
+      // icon placeholder
       const $iconSpan = jQuery("<span>")
-        .addClass(`left-nav-icon sb_${c.id || c.text.toLowerCase()}`)
-        .css("display", "none"); // mimic empty icons
+        .addClass("left-nav-icon")
+        .css("width", "1.25rem")
+        .css("display", "inline-block");
 
-      // Nav title span
       const $textSpan = jQuery("<span>")
         .addClass("hl_text-overflow sm:hidden md:hidden nav-title lg:block xl:block")
         .text(c.text);
 
-      // Append spans to link
       $link.append($iconSpan).append($textSpan);
-
-      // Append to menu
       $menu.append($link);
     });
   }
+
+
 
 
   function runSidebarHack($root, $nav, locId) {
