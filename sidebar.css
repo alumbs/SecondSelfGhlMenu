@@ -1,6 +1,6 @@
 .sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header,
       .sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .lead-connector {
-        overflow: visible !important;
+        overflow-x: visible !important;
       }
       .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
         position: relative;
