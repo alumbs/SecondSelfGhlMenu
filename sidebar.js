@@ -50,20 +50,30 @@
   }
 
   
-  function runSidebarHack(locId) {
+  function runSidebarHack(locId, retryCount = 0) {
+    const MAX_NAV_RETRIES = 10;
     // Always get fresh root and nav for the current location
     const root = document.querySelector(`.sidebar-v2-location[class*="${locId}"]`);
     if (!root) {
-      log("❌ No root found for location:", locId);
+      if (retryCount < MAX_NAV_RETRIES) {
+        log(`⏳ Root not found for location ${locId} (attempt ${retryCount + 1}), retrying…`);
+        setTimeout(() => runSidebarHack(locId, retryCount + 1), 200);
+      } else {
+        log("❌ Max root retries exceeded — giving up");
+      }
       return;
     }
     const $root = jQuery(root);
     const $nav = $root.find(NAV_SEL);
     if (!$nav.length) {
-      log("❌ No nav found for location:", locId);
+      if (retryCount < MAX_NAV_RETRIES) {
+        log(`⏳ Nav not found for location ${locId} (attempt ${retryCount + 1}), retrying…`);
+        setTimeout(() => runSidebarHack(locId, retryCount + 1), 200);
+      } else {
+        log("❌ Max nav retries exceeded — giving up");
+      }
       return;
     }
-
     // Check if already initialized, but verify submenus exist
     if (sidebarInitialized) {
       // If no submenus exist, force re-initialization
@@ -77,17 +87,6 @@
     }
     sidebarInitialized = true;
     log('🎯 Customizing sidebar for location:', locId);
-
-    // add sidebar-menu-hack class to the root element
-    const rootEl = $root.get(0);
-    if (!rootEl) {
-      log("❌ rootEl is null — $root resolved to:", $root);
-    } else if (!rootEl.classList.contains("sidebar-menu-hack")) {
-      rootEl.classList.add("sidebar-menu-hack");
-      log("✨ Added 'sidebar-menu-hack' class to root element", rootEl);
-    } else {
-      log("⚠️ Root already has sidebar-menu-hack:", rootEl.className, rootEl);
-    }
 
     const items = {
       marketing:     $nav.find('a[meta="email-marketing"]'),
@@ -202,7 +201,6 @@
       log("⛔ checkAndInject: no location ID");
       return;
     }
-
     runSidebarHack(loc);
   }
 
