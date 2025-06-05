@@ -1,13 +1,10 @@
-
 (function () {
   // ──────────────────────────────────────────────────────
   // CONFIG
   // ──────────────────────────────────────────────────────
   const BASE      = window.location.origin;
   const NAV_SEL   = "#sidebar-v2 .hl_nav-header nav[aria-label='header']";
-  const API_URL   = "https://nocodb.bizinabox.online/api/v2/tables/mnlu0gqrdzgylp3/records?offset=0&limit=25&viewId=vwwst4gdjurmx035";
-  const API_TOKEN = "dj1HZCn0mgAOJfrSrdjDq4sehyFxCztCsV-NqgUv";
-
+  const LOCATION_ID_PLACEHOLDER = "__LOCATION_ID__";
 
   let allowedLocationIds = [];
   let sidebarInitialized = false;
@@ -21,7 +18,6 @@
   function log(...args) {
     console.log("🧠 SidebarHack:", ...args);
   }
-
 
   // ──────────────────────────────────────────────────────
   // EXTRACT LOCATION ID
@@ -44,164 +40,149 @@
     return cls || null;
   }
 
+  function attachSubmenu($parent, children) {
+    if (!$parent.length) return;
+    $parent.find('.slideout-menu').remove();
+    $parent.attr("data-has-submenu", "true");
+    const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+    children.forEach(c => {
+      jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
+    });
+  }
 
-  // ──────────────────────────────────────────────────────
-  // APPLY HACK
-  // ──────────────────────────────────────────────────────
-  function runSidebarHack($root, $nav, locId) {
-    if (sidebarInitialized) {
-      log("⚠️ Sidebar already initialized, skipping");
+  
+  function runSidebarHack(locId, retryCount = 0) {
+    const MAX_NAV_RETRIES = 10;
+    // Always get fresh root and nav for the current location
+    const root = document.querySelector(`.sidebar-v2-location[class*="${locId}"]`);
+    if (!root) {
+      if (retryCount < MAX_NAV_RETRIES) {
+        log(`⏳ Root not found for location ${locId} (attempt ${retryCount + 1}), retrying…`);
+        setTimeout(() => runSidebarHack(locId, retryCount + 1), 200);
+      } else {
+        log("❌ Max root retries exceeded — giving up");
+      }
       return;
-    };
+    }
+    const $root = jQuery(root);
+    const $nav = $root.find(NAV_SEL);
+    if (!$nav.length) {
+      if (retryCount < MAX_NAV_RETRIES) {
+        log(`⏳ Nav not found for location ${locId} (attempt ${retryCount + 1}), retrying…`);
+        setTimeout(() => runSidebarHack(locId, retryCount + 1), 200);
+      } else {
+        log("❌ Max nav retries exceeded — giving up");
+      }
+      return;
+    }
+    // Check if already initialized, but verify submenus exist
+    if (sidebarInitialized) {
+      // If no submenus exist, force re-initialization
+      if ($nav.find('.slideout-menu').length === 0) {
+        log('⚠️ Sidebar initialized flag set, but no submenus found. Forcing re-initialization.');
+        sidebarInitialized = false;
+      } else {
+        log('⚠️ Sidebar already initialized, skipping');
+        return;
+      }
+    }
     sidebarInitialized = true;
-    log("🎯 Customizing sidebar for location:", locId);
+    log('🎯 Customizing sidebar for location:', locId);
 
-    // add sidebar-menu-hack class to the root element
-    const rootEl = $root.get(0);
-    if (!rootEl) {
-      log("❌ rootEl is null — $root resolved to:", $root);
-    } else if (!rootEl.classList.contains("sidebar-menu-hack")) {
-      rootEl.classList.add("sidebar-menu-hack");
-      log("✨ Added 'sidebar-menu-hack' class to root element", rootEl);
-    } else {
-      log("⚠️ Root already has sidebar-menu-hack:", rootEl.className, rootEl);
-    }
-
-
-
-    // Task Management link
-    const tasksHref = `/v2/location/${locId}/tasks`;
-    let $task = $nav.find('a[meta="task-management"]');
-    if (!$task.length) {
-      $task = jQuery(`
-        <a href="${tasksHref}" meta="task-management"
-           class="sidebarhack-nav w-full group px-3 flex items-center justify-start text-sm font-medium rounded-md cursor-pointer opacity-70 hover:opacity-100 py-2">
-          <span class="left-nav-icon"><i class="fas fa-tasks"></i></span>
-          <span class="nav-title">Task Management</span>
-        </a>
-      `);
-    } else {
-      $task.attr('href', tasksHref);
-    }
-
-    // gather items
+    // Use __LOCATION_ID__ as a placeholder in all submenu hrefs
     const items = {
-      dashboard:     $nav.find('a[meta="dashboard"]'),
-      conversations: $nav.find('a[meta="conversations"]'),
-      contacts:      $nav.find('a[meta="contacts"]'),
-      calendars:     $nav.find('a[meta="calendars"]'),
-      opportunities: $nav.find('a[meta="opportunities"]'),
-      payments:      $nav.find('a[meta="payments"]'),
       marketing:     $nav.find('a[meta="email-marketing"]'),
-      automation:    $nav.find('a[meta="automation"]'),
-      sites:    $nav.find('a[meta="sites"]'),
-      memberships:   $nav.find('a[meta="memberships"]')
+      memberships:   $nav.find('a[meta="memberships"]'),
+      sites:         $nav.find('a[meta="sites"]'),
+      reporting:     $nav.find('a[meta="reporting"]'),
+      reputation:    $nav.find('a[meta="reputation"]'),
+      payments:      $nav.find('a[meta="payments"]'),
+      aiAgents:      $nav.find('a[meta="ai-agents"]')
     };
-
-
-    // rename
-    items.marketing.find(".nav-title").text("Marketing");
-    items.memberships.find(".nav-title").text("Client Portal");
-
-
-    // hide all then reorder & show
-    $nav.children("a").not('[href^="javascript:"]').css("display", "none");
-
-    function showOrder($el, pos) {
-      if (!$el.length) return;
-      $el.css({ display: "flex", order: pos });
-      $nav.append($el);
-    }
-    showOrder(items.dashboard,     1);
-    showOrder(items.conversations, 2);
-    showOrder(items.contacts,      3);
-    showOrder(items.calendars,     4);
-    showOrder($task,               5);
-    showOrder(items.opportunities, 6);
-    showOrder(items.payments,      7);
-    showOrder(items.marketing,     8);
-    showOrder(items.sites,     9);
-    showOrder(items.automation,    10);
-    showOrder(items.memberships,   11);
-
-
-    // attach submenus
-    function attachSubmenu($parent, children) {
-      if (!$parent.length) return;
-
-      // 🧹 Remove existing submenu if any
-      $parent.find('.slideout-menu').remove();
-
-      $parent.attr("data-has-submenu", "true");
-      const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
-
-      children.forEach(c => {
-        jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
-      });
-    }
 
     const marketingChildren = [
-      { text: "Social Planner", href: `/v2/location/${locId}/marketing/social-planner/` },
-      { text: "Emails",         href: `/v2/location/${locId}/marketing/emails/statistics` },
-      { text: "Affiliate Manager", href: `/v2/location/${locId}/marketing/affiliate-manager/dashboard` },
-      { text: "Brand Boards",   href: `/v2/location/${locId}/marketing/brand-boards` },
-      { text: "Ad Manager",     href: `/v2/location/${locId}/marketing/ad-manager/home` },
-      { text: "Content AI",     href: `/v2/location/${locId}/marketing/content-ai` }
+      { text: "Social Planner", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/social-planner/` },
+      { text: "Emails",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/emails/statistics` },
+      { text: "Affiliate Manager", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/affiliate-manager/dashboard` },
+      { text: "Brand Boards",   href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/brand-boards` },
+      { text: "Ad Manager",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/ad-manager/home` }
     ];
     const membershipChildren = [
-      { text: "Dashboard",       href: `/v2/location/${locId}/memberships/client-portal/dashboard` },
-      { text: "Courses",         href: `/v2/location/${locId}/memberships/courses/dashboard` },
-      { text: "Groups",          href: `/v2/location/${locId}/memberships/communities/community-groups` },
-      { text: "Certificates",    href: `/v2/location/${locId}/memberships/certificates/create-certificates` },
-      { text: "Group Marketplace", href: `/v2/location/${locId}/memberships/gokollab/activation` }
+      { text: "Dashboard",       href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
+      { text: "Courses",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
+      { text: "Groups",          href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
+      { text: "Certificates",    href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` },
+      { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
     ];
     const sitesChildren = [
-      { text: "Funnels", href: `/v2/location/${locId}/funnels-websites/funnels` },
-      { text: "Websites", href: `/v2/location/${locId}/funnels-websites/websites` },
-      { text: "Stores", href: `/v2/location/${locId}/funnels-websites/stores` },
-      { text: "Webinars", href: `/v2/location/${locId}/funnels-websites/webinars` },
-      { text: "Analytics", href: `/v2/location/${locId}/analytics` },
-      { text: "Blogs", href: `/v2/location/${locId}/blogs` },
-      { text: "WordPress", href: `/v2/location/${locId}/wordpress` },
-      { text: "Client Portal", href: `/v2/location/${locId}/funnels-websites/client-portal/dashboard` },
-      { text: "Forms", href: `/v2/location/${locId}/form-builder/main` },
-      { text: "Surveys", href: `/v2/location/${locId}/survey-builder/main` },
-      { text: "Quizzes", href: `/v2/location/${locId}/quiz-builder/main` },
-      { text: "Chat Widget", href: `/v2/location/${locId}/funnels-websites/chat-widget` },
-      { text: "QR Codes", href: `/v2/location/${locId}/qr-codes` },
-      { text: "Domain Settings", href: `/v2/location/${locId}/settings/domain` },
+      { text: "Funnels", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/funnels` },
+      { text: "Websites", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/websites` },
+      { text: "Stores", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/stores` },
+      { text: "Webinars", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/webinars` },
+      { text: "Analytics", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/analytics` },
+      { text: "Blogs", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/blogs` },
+      { text: "WordPress", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/wordpress` },
+      { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/client-portal/dashboard` },
+      { text: "Forms", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/form-builder/main` },
+      { text: "Surveys", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/survey-builder/main` },
+      { text: "Quizzes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/quiz-builder/main` },
+      { text: "Chat Widget", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/chat-widget` },
+      { text: "QR Codes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/qr-codes` },
+      { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
+    ];
+    const membershipsChildren = [
+      { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
+      { text: "Courses", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
+      { text: "Communities", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
+      { text: "Certificates", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` }
+    ];
+    const reportingChildren = [
+      { text: "Custom Reports", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/reports` },
+      { text: "Google Ads Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/google-ads` },
+      { text: "Facebook Ads Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/facebook-ads` },
+      { text: "Attribution Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/attribution` },
+      { text: "Call Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/call` },
+      { text: "Appointment Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/appointment` },
+      { text: "Audit Report", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reporting/audit-report` }
+    ];
+    const reputationChildren = [
+      { text: "Overview", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/overview` },
+      { text: "Requests", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/requests` },
+      { text: "Reviews", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/reviews` },
+      { text: "Widgets", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/widget` },
+      { text: "Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/reputation/settings` }
+    ];
+    const paymentsChildren = [
+      { text: "Invoices & Estimates", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/invoices` },
+      { text: "Documents & Contracts", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/proposals-estimates` },
+      { text: "Orders", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/orders` },
+      { text: "Subscriptions", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/subscriptions` },
+      { text: "Payment Links", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/paymentlinks` },
+      { text: "Transactions", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/v2/transactions` },
+      { text: "Products", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/products` },
+      { text: "Coupons", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/coupons` },
+      { text: "Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/settings/receipts` },
+      { text: "Integrations", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/payments/integrations` }
+    ];
+    const aiAgentsChildren = [
+      { text: "Getting Started", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/getting-started` },
+      { text: "Voice AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/voice-ai` },
+      { text: "Conversation AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/conversation-ai` },
+      { text: "Knowledge Base", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/knowledge-base` },
+      { text: "Content AI", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/ai-agents/content-ai` }
     ];
 
     attachSubmenu(items.marketing,   marketingChildren);
     attachSubmenu(items.memberships, membershipChildren);
     attachSubmenu(items.sites,       sitesChildren);
+    attachSubmenu(items.memberships, membershipsChildren);
+    attachSubmenu(items.reporting, reportingChildren);
+    attachSubmenu(items.reputation, reputationChildren);
+    attachSubmenu(items.payments, paymentsChildren);
+    attachSubmenu(items.aiAgents, aiAgentsChildren);
 
     log("✅ Sidebar customization complete");
   }
-
-
-  // ──────────────────────────────────────────────────────
-  // CLEANUP INJECTIONS ONLY (no full DOM restore)
-  // ──────────────────────────────────────────────────────
-  function cleanupSidebar() {
-    log("🧹 Cleaning up previous sidebar tweaks");
-    sidebarInitialized = false;
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-    // remove injected style tag
-    const oldStyle = document.getElementById("sidebar-submenu-style");
-    if (oldStyle) oldStyle.remove();
-    // remove submenus and flags
-    document.querySelectorAll(".slideout-menu").forEach(el => el.remove());
-    document.querySelectorAll("[data-has-submenu]").forEach(el => el.removeAttribute("data-has-submenu"));
-    // remove our Task Management link
-    document.querySelectorAll('#sidebar-v2 .hl_nav-header a[meta="task-management"]').forEach(el => el.remove());
-    // reset inline styles on nav items
-    document.querySelectorAll("#sidebar-v2 .hl_nav-header a").forEach(a => a.removeAttribute("style"));
-  }
-
 
   // ──────────────────────────────────────────────────────
   // IMMEDIATE CHECK + INJECT
@@ -215,56 +196,8 @@
       log("⛔ checkAndInject: no location ID");
       return;
     }
-
-    if (!allowedLocationIds.includes(loc)) {
-      log(`⛔ checkAndInject: location '${loc}' not allowed`);
-      return;
-    }
-
-    const root = document.querySelector(`.sidebar-v2-location[class*="${loc}"]`);
-
-    if (!root) {
-      if (navRetryCount < MAX_NAV_RETRIES) {
-        navRetryCount++;
-        log(`⏳ Root not found for location ${loc} (attempt ${navRetryCount}), retrying…`);
-        setTimeout(checkAndInject, 200);
-      } else {
-        log("❌ Max root retries exceeded — giving up");
-        navRetryCount = 0;
-      }
-      return;
-    }
-
-    const $root = jQuery(root);
-    const $nav = $root.find(NAV_SEL);
-    if (!$nav.length) {
-      if (navRetryCount < MAX_NAV_RETRIES) {
-        navRetryCount++;
-        log(`⏳ Nav not found for location ${loc} (attempt ${navRetryCount}), retrying…`);
-        setTimeout(checkAndInject, 200);
-      } else {
-        log("❌ Max nav retries exceeded — giving up");
-        navRetryCount = 0;
-      }
-      return;
-    }
-
-    // ✅ Reset counter if successful
-    navRetryCount = 0;
-
-    // 🔁 Detect location change and reset state
-    if (loc !== lastLocationId) {
-      log(`🔁 Location ID changed: ${lastLocationId} → ${loc}`);
-      sidebarInitialized = false;
-      lastLocationId = loc;
-    }
-
-    runSidebarHack($root, $nav, loc);
+    runSidebarHack(loc);
   }
-
-
-
-
 
   // ──────────────────────────────────────────────────────
   // OBSERVE FOR LATE-LOADING NAV
@@ -335,7 +268,6 @@
       sidebarInitialized = false;
     }
 
-    cleanupSidebar();
     checkAndInject();
 
     // re-apply class if necessary, only if location is allowed (checkAndInject handles it)
@@ -369,18 +301,11 @@
     });
   }
 
-
   // ──────────────────────────────────────────────────────
   // FETCH ALLOWED LOCATIONS & HOOK NAV
   // ──────────────────────────────────────────────────────
   async function fetchAllowedLocations() {
     try {
-      const res  = await fetch(API_URL, { headers: { "xc-token": API_TOKEN } });
-      const json = await res.json();
-      allowedLocationIds = json.list.map(r => r.locationId);
-      log("✅ allowedLocationIds:", allowedLocationIds);
-
-
       history.pushState = new Proxy(history.pushState, {
         apply(target, thisArg, args) {
           const result = target.apply(thisArg, args);
@@ -403,18 +328,32 @@
       });
 
       jQuery(document).on("click", "#sidebar-v2 .slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
-        const href = jQuery(this).attr("href");
+        let href = jQuery(this).attr("href");
+        const currentPath = window.location.pathname;
         if (!href || href.startsWith("http")) return; // allow external links
+        // Use extractLocationIdFromDom to get the latest locationId
+        const currentLocId = extractLocationIdFromDom();
+        if (currentLocId) {
+          href = href.replace(LOCATION_ID_PLACEHOLDER, currentLocId);
+        }
+        // Normalize both paths to avoid trailing slash issues
+        const normalizedHref = href.replace(/\/+$/, '');
+        const normalizedCurrent = currentPath.replace(/\/+$/, '');
+
+        if (normalizedHref === normalizedCurrent) {
+          log("⚠️ SPA navigation skipped — already on target route:", href);
+          return;
+        }
 
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        // emulate SPA navigation
         log("🔗 Intercepted link click → navigating SPA to", href);
         history.pushState({}, '', href);
         window.dispatchEvent(new PopStateEvent('popstate'));
         resetSidebarOnUrlChange();
       });
+
 
       // initial
       // Detect initial sidebar state
@@ -445,7 +384,6 @@
     }
   }
 
-
   // ──────────────────────────────────────────────────────
   // BOOTSTRAP
   // ──────────────────────────────────────────────────────
@@ -453,6 +391,4 @@
     log("📦 Bootstrapping sidebar hack…");
     fetchAllowedLocations();
   });
-
-
 })();
