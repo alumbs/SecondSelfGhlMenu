@@ -138,20 +138,12 @@
 
     const paymentsChildren = [
       { text: "Invoices & Estimates", href: `/v2/location/${locId}/payments/invoices` },
-      { text: "Recurring Invoices", href: `/v2/location/${locId}/payments/recurring-templates` },
-      { text: "Templates", href: `/v2/location/${locId}/payments/invoice-templates` },
-      { text: "Estimates", href: `/v2/location/${locId}/payments/v2/estimates` },
       { text: "Documents & Contracts", href: `/v2/location/${locId}/payments/proposals-estimates` },
-      { text: "Proposal Templates", href: `/v2/location/${locId}/payments/proposals-estimates/templates` },
       { text: "Orders", href: `/v2/location/${locId}/payments/v2/orders` },
-      { text: "Abandoned Checkouts", href: `/v2/location/${locId}/payments/v2/abandoned-checkouts` },
       { text: "Subscriptions", href: `/v2/location/${locId}/payments/v2/subscriptions` },
       { text: "Payment Links", href: `/v2/location/${locId}/payments/v2/paymentlinks` },
       { text: "Transactions", href: `/v2/location/${locId}/payments/v2/transactions` },
       { text: "Products", href: `/v2/location/${locId}/payments/products` },
-      { text: "Collections", href: `/v2/location/${locId}/payments/products/collections` },
-      { text: "Inventory", href: `/v2/location/${locId}/payments/products/inventory` },
-      { text: "Reviews", href: `/v2/location/${locId}/payments/products/reviews` },
       { text: "Coupons", href: `/v2/location/${locId}/payments/coupons` },
       { text: "Settings", href: `/v2/location/${locId}/payments/settings/receipts` },
       { text: "Integrations", href: `/v2/location/${locId}/payments/integrations` }
