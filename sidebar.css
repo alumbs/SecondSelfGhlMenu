@@ -35,13 +35,8 @@
   border-top: 1px dotted #e5e7eb;
   padding-top: 1rem !important;
 }
-/* If it's a native title tooltip */
-[title] {
-  pointer-events: none; /* allows hover to pass through */
-}
 
 /* If it’s a custom tooltip you can target */
 .tooltip, .v-tooltip {
-  pointer-events: none !important;
   z-index: 0 !important; /* sends it behind submenu */
 }
