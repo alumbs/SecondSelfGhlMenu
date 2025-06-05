@@ -1,47 +1,47 @@
 .sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header,
-      .sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .lead-connector {
-        overflow-x: visible !important;
-      }
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
-        position: relative;
-      }
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: calc(100% - 4px); /* reduces the gap between icon and submenu */
-        background: #fff;
-        border-radius: 0.25rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        min-width: 12rem;
-        padding: 0.5rem 0;
-        z-index: 1000;
-      }
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu]:hover > .slideout-menu,
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu:hover {
-        display: block !important;
-      }
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a {
-        display: block;
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        color: #333;
-        text-decoration: none;
-      }
-      .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a:hover {
-        background: #f3f4f6;
-      }
-      .sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header a[meta="opportunities"] {
-        border-top: 1px dotted #e5e7eb;
-        padding-top: 1rem !important;
-      }
-      /* If it's a native title tooltip */
-      [title] {
-        pointer-events: none; /* allows hover to pass through */
-      }
+.sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .lead-connector {
+  overflow: visible !important;
+}
+.sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
+  position: relative;
+}
+.sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: calc(100% - 4px); /* reduces the gap between icon and submenu */
+  background: #fff;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 12rem;
+  padding: 0.5rem 0;
+  z-index: 1000;
+}
+.sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu]:hover > .slideout-menu,
+.sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu:hover {
+  display: block !important;
+}
+.sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #333;
+  text-decoration: none;
+}
+.sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a:hover {
+  background: #f3f4f6;
+}
+.sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header a[meta="opportunities"] {
+  border-top: 1px dotted #e5e7eb;
+  padding-top: 1rem !important;
+}
+/* If it's a native title tooltip */
+[title] {
+  pointer-events: none; /* allows hover to pass through */
+}
 
-      /* If it’s a custom tooltip you can target */
-      .tooltip, .v-tooltip {
-        pointer-events: none !important;
-        z-index: 0 !important; /* sends it behind submenu */
-      }
+/* If it’s a custom tooltip you can target */
+.tooltip, .v-tooltip {
+  pointer-events: none !important;
+  z-index: 0 !important; /* sends it behind submenu */
+}
