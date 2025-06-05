@@ -49,7 +49,7 @@
     });
   }
 
-  function runSidebarHack($nav, locId) {
+  function runSidebarHack($root, $nav, locId) {
     if (sidebarInitialized) {
       log("⚠️ Sidebar already initialized, skipping");
       return;
