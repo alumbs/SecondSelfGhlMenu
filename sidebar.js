@@ -105,8 +105,7 @@
       { text: "Emails",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/emails/statistics` },
       { text: "Affiliate Manager", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/affiliate-manager/dashboard` },
       { text: "Brand Boards",   href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/brand-boards` },
-      { text: "Ad Manager",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/ad-manager/home` },
-      { text: "Content AI",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/content-ai` }
+      { text: "Ad Manager",     href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/marketing/ad-manager/home` }
     ];
     const membershipChildren = [
       { text: "Dashboard",       href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
