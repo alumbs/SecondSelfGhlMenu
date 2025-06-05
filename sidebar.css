@@ -1,5 +1,5 @@
-.sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header,
-.sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .lead-connector {
+.sidebar-v2-location #sidebar-v2 .hl_nav-header,
+.sidebar-v2-location #sidebar-v2 .lead-connector {
   overflow: visible !important;
 }
 .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
@@ -31,7 +31,7 @@
 .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a:hover {
   background: #f3f4f6;
 }
-.sidebar-v2-location.sidebar-menu-hack #sidebar-v2 .hl_nav-header a[meta="opportunities"] {
+.sidebar-v2-location #sidebar-v2 .hl_nav-header a[meta="opportunities"] {
   border-top: 1px dotted #e5e7eb;
   padding-top: 1rem !important;
 }

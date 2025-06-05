@@ -50,13 +50,33 @@
   }
 
   
-  function runSidebarHack($root, $nav, locId) {
-    if (sidebarInitialized) {
-      log("⚠️ Sidebar already initialized, skipping");
+  function runSidebarHack(locId) {
+    // Always get fresh root and nav for the current location
+    const root = document.querySelector(`.sidebar-v2-location[class*="${locId}"]`);
+    if (!root) {
+      log("❌ No root found for location:", locId);
       return;
-    };
+    }
+    const $root = jQuery(root);
+    const $nav = $root.find(NAV_SEL);
+    if (!$nav.length) {
+      log("❌ No nav found for location:", locId);
+      return;
+    }
+
+    // Check if already initialized, but verify submenus exist
+    if (sidebarInitialized) {
+      // If no submenus exist, force re-initialization
+      if ($nav.find('.slideout-menu').length === 0) {
+        log('⚠️ Sidebar initialized flag set, but no submenus found. Forcing re-initialization.');
+        sidebarInitialized = false;
+      } else {
+        log('⚠️ Sidebar already initialized, skipping');
+        return;
+      }
+    }
     sidebarInitialized = true;
-    log("🎯 Customizing sidebar for location:", locId);
+    log('🎯 Customizing sidebar for location:', locId);
 
     // add sidebar-menu-hack class to the root element
     const rootEl = $root.get(0);
@@ -183,50 +203,8 @@
       return;
     }
 
-    const root = document.querySelector(`.sidebar-v2-location[class*="${loc}"]`);
-
-    if (!root) {
-      if (navRetryCount < MAX_NAV_RETRIES) {
-        navRetryCount++;
-        log(`⏳ Root not found for location ${loc} (attempt ${navRetryCount}), retrying…`);
-        setTimeout(checkAndInject, 200);
-      } else {
-        log("❌ Max root retries exceeded — giving up");
-        navRetryCount = 0;
-      }
-      return;
-    }
-
-    const $root = jQuery(root);
-    const $nav = $root.find(NAV_SEL);
-    if (!$nav.length) {
-      if (navRetryCount < MAX_NAV_RETRIES) {
-        navRetryCount++;
-        log(`⏳ Nav not found for location ${loc} (attempt ${navRetryCount}), retrying…`);
-        setTimeout(checkAndInject, 200);
-      } else {
-        log("❌ Max nav retries exceeded — giving up");
-        navRetryCount = 0;
-      }
-      return;
-    }
-
-    // ✅ Reset counter if successful
-    navRetryCount = 0;
-
-    // 🔁 Detect location change and reset state
-    if (loc !== lastLocationId) {
-      log(`🔁 Location ID changed: ${lastLocationId} → ${loc}`);
-      sidebarInitialized = false;
-      lastLocationId = loc;
-    }
-
-    runSidebarHack($root, $nav, loc);
+    runSidebarHack(loc);
   }
-
-
-
-
 
   // ──────────────────────────────────────────────────────
   // OBSERVE FOR LATE-LOADING NAV
