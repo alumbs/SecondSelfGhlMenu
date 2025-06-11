@@ -103,6 +103,9 @@
     $parent.on('mouseenter', function () {
       clearTimeout(hideTimeout);
 
+      // Hide all other menus before showing this one
+      $('.slideout-menu').not($menu).hide();
+
       const rect = this.getBoundingClientRect();
       const menuHeight = $menu.outerHeight();
       const menuWidth = $menu.outerWidth();
@@ -117,6 +120,7 @@
         display: 'block'
       });
     });
+
 
     $parent.on('mouseleave', function () {
       hideTimeout = setTimeout(() => $menu.hide(), 200);
