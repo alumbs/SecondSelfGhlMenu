@@ -42,16 +42,79 @@
 
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
-    $parent.find('.slideout-menu').remove();
-    $parent.attr("data-has-submenu", "true");
-    const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+
+    const uid = `submenu-${Math.random().toString(36).substring(2, 8)}`;
+    const $menu = jQuery("<div>")
+      .addClass("slideout-menu")
+      .attr("id", uid)
+      .css({
+        position: 'fixed',
+        display: 'none',
+        background: '#fff',
+        borderRadius: '0.25rem',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        minWidth: '12rem',
+        maxHeight: '300px',
+        overflowY: 'auto',
+        zIndex: 9999
+      })
+      .appendTo('body');
+
     children.forEach(c => {
-      jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
+      jQuery("<a>")
+        .attr("href", c.href)
+        .text(c.text)
+        .css({
+          display: 'block',
+          padding: '0.5rem 1rem',
+          color: '#333',
+          textDecoration: 'none'
+        })
+        .hover(
+          function () { $(this).css('background', '#f0f0f0'); },
+          function () { $(this).css('background', 'transparent'); }
+        )
+        .appendTo($menu);
+    });
+
+    let hideTimeout;
+
+    $parent.attr("data-has-submenu", "true");
+
+    $parent.on('mouseenter', function () {
+      clearTimeout(hideTimeout);
+
+      const rect = this.getBoundingClientRect();
+      const menuHeight = $menu.outerHeight();
+      const menuWidth = $menu.outerWidth();
+
+      // Check if right overflow
+      const viewportRight = window.innerWidth;
+      const fitsRight = rect.right + menuWidth <= viewportRight;
+
+      $menu.css({
+        top: `${Math.min(rect.top, window.innerHeight - menuHeight - 10)}px`,
+        left: fitsRight ? `${rect.right}px` : `${rect.left - menuWidth}px`,
+        display: 'block'
+      });
+    });
+
+    $parent.on('mouseleave', function () {
+      hideTimeout = setTimeout(() => $menu.hide(), 200);
+    });
+
+    $menu.on('mouseenter', function () {
+      clearTimeout(hideTimeout);
+      $menu.show();
+    }).on('mouseleave', function () {
+      $menu.hide();
     });
   }
 
   
   function runSidebarHack(locId, retryCount = 0) {
+    $('.slideout-menu').remove(); // clear all previously rendered menus
+
     const MAX_NAV_RETRIES = 10;
     // Always get fresh root and nav for the current location
     const root = document.querySelector(`.sidebar-v2-location[class*="${locId}"]`);
@@ -97,7 +160,7 @@
       reporting:     $nav.find('a[meta="reporting"]'),
       reputation:    $nav.find('a[meta="reputation"]'),
       payments:      $nav.find('a[meta="payments"]'),
-      aiAgents:      $nav.find('a[meta="ai-agents"]')
+      aiAgents:      $nav.find('a[meta="AI Agents"]')
     };
 
     const marketingChildren = [
@@ -112,7 +175,7 @@
       { text: "Courses",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
       { text: "Groups",          href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
       { text: "Certificates",    href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` },
-      { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
+      // { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
     ];
     const sitesChildren = [
       { text: "Funnels", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/funnels` },
@@ -128,7 +191,7 @@
       { text: "Quizzes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/quiz-builder/main` },
       { text: "Chat Widget", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/chat-widget` },
       { text: "QR Codes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/qr-codes` },
-      { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
+      // { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
     ];
     const membershipsChildren = [
       { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
@@ -327,16 +390,16 @@
         resetSidebarOnUrlChange();
       });
 
-      jQuery(document).on("click", "#sidebar-v2 .slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
+      jQuery(document).on("click", ".slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
         let href = jQuery(this).attr("href");
         const currentPath = window.location.pathname;
-        if (!href || href.startsWith("http")) return; // allow external links
-        // Use extractLocationIdFromDom to get the latest locationId
+        if (!href || href.startsWith("http")) return;
+
         const currentLocId = extractLocationIdFromDom();
-        if (currentLocId) {
+        if (href.includes(LOCATION_ID_PLACEHOLDER) && currentLocId) {
           href = href.replace(LOCATION_ID_PLACEHOLDER, currentLocId);
         }
-        // Normalize both paths to avoid trailing slash issues
+
         const normalizedHref = href.replace(/\/+$/, '');
         const normalizedCurrent = currentPath.replace(/\/+$/, '');
 
@@ -353,6 +416,7 @@
         window.dispatchEvent(new PopStateEvent('popstate'));
         resetSidebarOnUrlChange();
       });
+
 
 
       // initial

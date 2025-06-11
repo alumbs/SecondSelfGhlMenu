@@ -1,14 +1,21 @@
-.sidebar-v2-location #sidebar-v2 .hl_nav-header,
-.sidebar-v2-location #sidebar-v2 .lead-connector {
-  overflow: visible !important;
-}
 .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
   position: relative;
+}
+
+/* Add arrow for items with submenu */
+#app .sidebar-v2-location #sidebar-v2 nav a[data-has-submenu]::after {
+  content: "›";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 0.85rem;
+  pointer-events: none;
 }
 .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu {
   display: none;
   position: absolute;
-  top: 0;
   left: calc(100% - 4px); /* reduces the gap between icon and submenu */
   background: #fff;
   border-radius: 0.25rem;
