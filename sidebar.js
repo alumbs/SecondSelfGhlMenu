@@ -40,6 +40,25 @@
     return cls || null;
   }
 
+  async function waitForElement(selector, timeoutMs = 10000) {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+
+      const interval = setInterval(() => {
+        const element = document.querySelector(selector);
+        const elapsed = Date.now() - start;
+
+        if (element) {
+          clearInterval(interval);
+          resolve(element);
+        } else if (elapsed >= timeoutMs) {
+          clearInterval(interval);
+          reject(new Error(`Timeout: Element ${selector} not found within ${timeoutMs}ms`));
+        }
+      }, 100);
+    });
+  }
+
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
 
@@ -111,6 +130,28 @@
     });
   }
 
+  async function applyLogoOverride(locationId) {
+    const defaultLogo = 'https://msgsndr-private.storage.googleapis.com/companyPhotos/f867d50f-6649-4614-b371-1419bec355a3.png';
+
+    const logoOverrides = {
+      'ttXrkcpQy15sF0E5eKg3': 'https://storage.googleapis.com/msgsndr/ttXrkcpQy15sF0E5eKg3/media/681e4e036c40219138e44294.png',
+      '7CruDLkFwMOZVGRa6cfu': 'https://storage.googleapis.com/msgsndr/ttXrkcpQy15sF0E5eKg3/media/681e4e036c40219138e44294.png'
+    };
+
+    try {
+      log('🖼️ Waiting for agency logo element...');
+      await waitForElement('.agency-logo-container img.agency-logo');
+
+      const logoUrl = logoOverrides[locationId] || defaultLogo;
+
+      $('.agency-logo-container img.agency-logo').attr('src', logoUrl);
+      log(`✅ Logo set for location ${locationId}: ${logoUrl}`);
+    } catch (err) {
+      console.warn(`⚠️ Failed to set logo for location ${locationId}:`, err.message);
+    }
+  }
+
+
   
   function runSidebarHack(locId, retryCount = 0) {
     $('.slideout-menu').remove(); // clear all previously rendered menus
@@ -151,6 +192,8 @@
     }
     sidebarInitialized = true;
     log('🎯 Customizing sidebar for location:', locId);
+
+    applyLogoOverride(locId);
 
     // Use __LOCATION_ID__ as a placeholder in all submenu hrefs
     const items = {
@@ -344,25 +387,6 @@
   }
 
 
-
-  async function waitForElement(selector, timeoutMs = 10000) {
-    return new Promise((resolve, reject) => {
-      const start = Date.now();
-
-      const interval = setInterval(() => {
-        const element = document.querySelector(selector);
-        const elapsed = Date.now() - start;
-
-        if (element) {
-          clearInterval(interval);
-          resolve(element);
-        } else if (elapsed >= timeoutMs) {
-          clearInterval(interval);
-          reject(new Error(`Timeout: Element ${selector} not found within ${timeoutMs}ms`));
-        }
-      }, 100);
-    });
-  }
 
   // ──────────────────────────────────────────────────────
   // FETCH ALLOWED LOCATIONS & HOOK NAV
