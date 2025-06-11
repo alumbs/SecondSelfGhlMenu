@@ -43,7 +43,6 @@
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
 
-    // Add identifier so submenu can be uniquely referenced
     const uid = `submenu-${Math.random().toString(36).substring(2, 8)}`;
     const $menu = jQuery("<div>")
       .addClass("slideout-menu")
@@ -55,13 +54,12 @@
         borderRadius: '0.25rem',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         minWidth: '12rem',
-        maxHeight: '20rem',
+        maxHeight: '300px',
         overflowY: 'auto',
         zIndex: 9999
       })
       .appendTo('body');
 
-    // Populate submenu items
     children.forEach(c => {
       jQuery("<a>")
         .attr("href", c.href)
@@ -79,30 +77,39 @@
         .appendTo($menu);
     });
 
-    // Hover logic
+    let hideTimeout;
+
     $parent.attr("data-has-submenu", "true");
 
     $parent.on('mouseenter', function () {
+      clearTimeout(hideTimeout);
+
       const rect = this.getBoundingClientRect();
+      const menuHeight = $menu.outerHeight();
+      const menuWidth = $menu.outerWidth();
+
+      // Check if right overflow
+      const viewportRight = window.innerWidth;
+      const fitsRight = rect.right + menuWidth <= viewportRight;
+
       $menu.css({
-        top: `${rect.top}px`,
-        left: `${rect.right}px`,
+        top: `${Math.min(rect.top, window.innerHeight - menuHeight - 10)}px`,
+        left: fitsRight ? `${rect.right}px` : `${rect.left - menuWidth}px`,
         display: 'block'
       });
     });
 
     $parent.on('mouseleave', function () {
-      setTimeout(() => $menu.hide(), 200);
+      hideTimeout = setTimeout(() => $menu.hide(), 200);
     });
 
     $menu.on('mouseenter', function () {
+      clearTimeout(hideTimeout);
       $menu.show();
     }).on('mouseleave', function () {
       $menu.hide();
     });
   }
-
-
 
   
   function runSidebarHack(locId, retryCount = 0) {
