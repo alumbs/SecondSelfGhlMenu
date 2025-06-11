@@ -160,7 +160,7 @@
       reporting:     $nav.find('a[meta="reporting"]'),
       reputation:    $nav.find('a[meta="reputation"]'),
       payments:      $nav.find('a[meta="payments"]'),
-      aiAgents:      $nav.find('a[meta="ai-agents"]')
+      aiAgents:      $nav.find('a[meta="AI Agents"]')
     };
 
     const marketingChildren = [
@@ -175,7 +175,7 @@
       { text: "Courses",         href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/courses/dashboard` },
       { text: "Groups",          href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/communities/community-groups` },
       { text: "Certificates",    href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/certificates/create-certificates` },
-      { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
+      // { text: "Group Marketplace", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/gokollab/activation` }
     ];
     const sitesChildren = [
       { text: "Funnels", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/funnels` },
@@ -191,7 +191,7 @@
       { text: "Quizzes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/quiz-builder/main` },
       { text: "Chat Widget", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/funnels-websites/chat-widget` },
       { text: "QR Codes", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/qr-codes` },
-      { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
+      // { text: "Domain Settings", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/settings/domain` },
     ];
     const membershipsChildren = [
       { text: "Client Portal", href: `/v2/location/${LOCATION_ID_PLACEHOLDER}/memberships/client-portal/dashboard` },
