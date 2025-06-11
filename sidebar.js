@@ -43,14 +43,11 @@
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
 
-    // Clean up old menu
-    $('.slideout-menu').remove(); // Make global so no duplication
-
-    $parent.attr("data-has-submenu", "true");
-
-    // Create and append to body (not inside scrollable sidebar)
+    // Add identifier so submenu can be uniquely referenced
+    const uid = `submenu-${Math.random().toString(36).substring(2, 8)}`;
     const $menu = jQuery("<div>")
       .addClass("slideout-menu")
+      .attr("id", uid)
       .css({
         position: 'fixed',
         display: 'none',
@@ -64,6 +61,7 @@
       })
       .appendTo('body');
 
+    // Populate submenu items
     children.forEach(c => {
       jQuery("<a>")
         .attr("href", c.href)
@@ -74,15 +72,16 @@
           color: '#333',
           textDecoration: 'none'
         })
-        .hover(function () {
-          $(this).css('background', '#f0f0f0');
-        }, function () {
-          $(this).css('background', 'transparent');
-        })
+        .hover(
+          function () { $(this).css('background', '#f0f0f0'); },
+          function () { $(this).css('background', 'transparent'); }
+        )
         .appendTo($menu);
     });
 
-    // Show menu on hover and position it
+    // Hover logic
+    $parent.attr("data-has-submenu", "true");
+
     $parent.on('mouseenter', function () {
       const rect = this.getBoundingClientRect();
       $menu.css({
@@ -93,7 +92,7 @@
     });
 
     $parent.on('mouseleave', function () {
-      setTimeout(() => $menu.hide(), 250);
+      setTimeout(() => $menu.hide(), 200);
     });
 
     $menu.on('mouseenter', function () {
@@ -104,8 +103,11 @@
   }
 
 
+
   
   function runSidebarHack(locId, retryCount = 0) {
+    $('.slideout-menu').remove(); // clear all previously rendered menus
+
     const MAX_NAV_RETRIES = 10;
     // Always get fresh root and nav for the current location
     const root = document.querySelector(`.sidebar-v2-location[class*="${locId}"]`);
@@ -381,16 +383,16 @@
         resetSidebarOnUrlChange();
       });
 
-      jQuery(document).on("click", "#sidebar-v2 .slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
+      jQuery(document).on("click", ".slideout-menu a, #sidebar-v2 a.sidebarhack-nav", function (e) {
         let href = jQuery(this).attr("href");
         const currentPath = window.location.pathname;
-        if (!href || href.startsWith("http")) return; // allow external links
-        // Use extractLocationIdFromDom to get the latest locationId
+        if (!href || href.startsWith("http")) return;
+
         const currentLocId = extractLocationIdFromDom();
-        if (currentLocId) {
+        if (href.includes(LOCATION_ID_PLACEHOLDER) && currentLocId) {
           href = href.replace(LOCATION_ID_PLACEHOLDER, currentLocId);
         }
-        // Normalize both paths to avoid trailing slash issues
+
         const normalizedHref = href.replace(/\/+$/, '');
         const normalizedCurrent = currentPath.replace(/\/+$/, '');
 
@@ -407,6 +409,7 @@
         window.dispatchEvent(new PopStateEvent('popstate'));
         resetSidebarOnUrlChange();
       });
+
 
 
       // initial
