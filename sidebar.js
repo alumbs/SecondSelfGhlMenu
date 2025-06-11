@@ -42,13 +42,67 @@
 
   function attachSubmenu($parent, children) {
     if (!$parent.length) return;
-    $parent.find('.slideout-menu').remove();
+
+    // Clean up old menu
+    $('.slideout-menu').remove(); // Make global so no duplication
+
     $parent.attr("data-has-submenu", "true");
-    const $menu = jQuery("<div>").addClass("slideout-menu").appendTo($parent);
+
+    // Create and append to body (not inside scrollable sidebar)
+    const $menu = jQuery("<div>")
+      .addClass("slideout-menu")
+      .css({
+        position: 'fixed',
+        display: 'none',
+        background: '#fff',
+        borderRadius: '0.25rem',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        minWidth: '12rem',
+        maxHeight: '20rem',
+        overflowY: 'auto',
+        zIndex: 9999
+      })
+      .appendTo('body');
+
     children.forEach(c => {
-      jQuery("<a>").attr("href", c.href).text(c.text).appendTo($menu);
+      jQuery("<a>")
+        .attr("href", c.href)
+        .text(c.text)
+        .css({
+          display: 'block',
+          padding: '0.5rem 1rem',
+          color: '#333',
+          textDecoration: 'none'
+        })
+        .hover(function () {
+          $(this).css('background', '#f0f0f0');
+        }, function () {
+          $(this).css('background', 'transparent');
+        })
+        .appendTo($menu);
+    });
+
+    // Show menu on hover and position it
+    $parent.on('mouseenter', function () {
+      const rect = this.getBoundingClientRect();
+      $menu.css({
+        top: `${rect.top}px`,
+        left: `${rect.right}px`,
+        display: 'block'
+      });
+    });
+
+    $parent.on('mouseleave', function () {
+      setTimeout(() => $menu.hide(), 250);
+    });
+
+    $menu.on('mouseenter', function () {
+      $menu.show();
+    }).on('mouseleave', function () {
+      $menu.hide();
     });
   }
+
 
   
   function runSidebarHack(locId, retryCount = 0) {
