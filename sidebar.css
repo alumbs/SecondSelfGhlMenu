@@ -1,7 +1,7 @@
+
 .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu] {
   position: relative;
 }
-
 /* Add arrow for items with submenu */
 #app .sidebar-v2-location #sidebar-v2 nav a[data-has-submenu]::after {
   content: "›";
@@ -13,20 +13,23 @@
   font-size: 0.85rem;
   pointer-events: none;
 }
+
 .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu {
   display: none;
   position: absolute;
-  left: calc(100% - 4px); /* reduces the gap between icon and submenu */
+  left: calc(100% - 4px); /* reduces the gap between icon and submenu */ 
   background: #fff;
   border-radius: 0.25rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   min-width: 12rem;
   padding: 0.5rem 0;
-  z-index: 1000;
+  z-index: 9999 !important;
 }
 .sidebar-v2-location #sidebar-v2 .hl_nav-header a[data-has-submenu]:hover > .slideout-menu,
 .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu:hover {
   display: block !important;
+    max-height: 20rem;
+  overflow-y: scroll;
 }
 .sidebar-v2-location #sidebar-v2 .hl_nav-header .slideout-menu a {
   display: block;
@@ -45,5 +48,17 @@
 
 /* If it’s a custom tooltip you can target */
 .tooltip, .v-tooltip {
+  /* pointer-events: none !important; */
   z-index: 0 !important; /* sends it behind submenu */
+}
+
+/* #sb_app-media, */
+#helpDeskCtrlNSW,
+#sb_app-marketplace {
+    display: none;
+}
+body:not([data-location-name$='settings-v2']):not([data-location-name='labs']):not([data-location-name='audit-location-v2']) 
+#app .sidebar-v2-location .hl_header .topmenu-nav {
+  margin-top: 2.5rem; /* mt-8 */
+  left: 0 !important;
 }
